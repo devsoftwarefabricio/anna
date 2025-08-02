@@ -8,7 +8,7 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  color: #333;
+  color: #333; 
   overflow-x: hidden;
 }
 
@@ -731,7 +731,7 @@ body {
 
 /* Footer - Fundo Escuro */
 .footer {
-  background: #1a1a1a;
+  background: #ffffff; 
   color: white;
   padding: 40px 0;
 }
@@ -758,7 +758,7 @@ body {
 }
 
 .footer-text p {
-  color: #ccc;
+  color: #284e91;
   font-size: 0.9rem;
 }
 
