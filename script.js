@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initSmoothScroll()
   initParallaxEffect()
   initTypingEffect()
-  initClientsCarousel() // Inicializa o carrossel de clientes
+  initClientsCarousel() // Inicializa o carrossel de clientes com a nova lógica
 
   // Add loading animation
   document.body.style.opacity = "0"
@@ -33,12 +33,6 @@ function initScrollAnimations() {
           const delay = Array.from(entry.target.parentNode.children).indexOf(entry.target) * 200
           entry.target.style.transitionDelay = delay + "ms"
         }
-
-        // Removido: staggered animation for client logos, agora gerenciado pelo carrossel
-        // if (entry.target.classList.contains('client-logo')) {
-        //     const delay = Array.from(entry.target.parentNode.children).indexOf(entry.target) * 100;
-        //     entry.target.style.transitionDelay = delay + 'ms';
-        // }
       }
     })
   }, observerOptions)
@@ -48,10 +42,8 @@ function initScrollAnimations() {
     { selector: ".service-card", class: "fade-in" },
     { selector: ".about-text", class: "slide-in-left" },
     { selector: ".about-visual", class: "slide-in-right" },
-    // Removido: '.client-logo' do observer de scroll
     { selector: ".contact-info", class: "slide-in-left" },
     { selector: ".contact-visual", class: "slide-in-right" },
-    // Novos elementos para animação de scroll
     { selector: ".image-text-visual", class: "slide-in-right" },
     { selector: ".image-text-info", class: "slide-in-left" },
   ]
@@ -184,16 +176,6 @@ document.querySelectorAll(".service-card").forEach((card) => {
   })
 })
 
-// Removido: Client Logo Click Effect, agora gerenciado pelo carrossel
-// document.querySelectorAll('.client-logo').forEach(logo => {
-//     logo.addEventListener('click', function() {
-//         this.style.transform = 'scale(0.95)';
-//         setTimeout(() => {
-//             this.style.transform = 'scale(1)';
-//         }, 150);
-//     });
-// });
-
 // Floating Cards Animation Enhancement
 function enhanceFloatingCards() {
   const floatingCards = document.querySelectorAll(".floating-card")
@@ -221,7 +203,7 @@ function enhanceFloatingCards() {
 
           setTimeout(() => {
             if (!card.matches(":hover")) {
-              card.style.transform = card.style.transform.replace(/ translate$$[^)]*$$/, "")
+              card.style.transform = card.style.transform.replace(/ translate\(.+?\)/, "")
             }
           }, 2000)
         }
@@ -234,11 +216,9 @@ function enhanceFloatingCards() {
 // Initialize enhanced floating cards
 setTimeout(enhanceFloatingCards, 2000)
 
-// Header scroll effect (if you want to add a sticky header later)
+// Header scroll effect
 window.addEventListener("scroll", () => {
   const scrolled = window.pageYOffset
-
-  // Add body class for scroll-based styling
   if (scrolled > 100) {
     document.body.classList.add("scrolled")
   } else {
@@ -251,9 +231,9 @@ function throttle(func, limit) {
   let inThrottle
   return function () {
     const args = arguments
-
+    const context = this
     if (!inThrottle) {
-      func.apply(this, args)
+      func.apply(context, args)
       inThrottle = true
       setTimeout(() => (inThrottle = false), limit)
     }
@@ -261,13 +241,10 @@ function throttle(func, limit) {
 }
 
 // Apply throttling to scroll events
-const throttledScroll = throttle(() => {
-  initParallaxEffect()
-}, 16) // ~60fps
-
+const throttledScroll = throttle(initParallaxEffect, 16) // ~60fps
 window.addEventListener("scroll", throttledScroll)
 
-// Add loading states for better UX
+// Loading states
 function showLoading(element) {
   element.style.opacity = "0.7"
   element.style.pointerEvents = "none"
@@ -280,10 +257,7 @@ function hideLoading(element) {
 
 // WhatsApp button click tracking
 document.querySelector(".whatsapp-btn")?.addEventListener("click", function () {
-  // Add analytics tracking here if needed
   console.log("WhatsApp button clicked")
-
-  // Add click animation
   this.style.transform = "scale(0.9)"
   setTimeout(() => {
     this.style.transform = "scale(1.1)"
@@ -293,7 +267,7 @@ document.querySelector(".whatsapp-btn")?.addEventListener("click", function () {
   }, 200)
 })
 
-// Add intersection observer for contact section email animation
+// Intersection observer for contact section email animation
 const contactObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
@@ -311,25 +285,22 @@ const contactObserver = new IntersectionObserver(
   { threshold: 0.3 },
 )
 
-// Observe contact section
 const contactSection = document.querySelector(".contact-info")
 if (contactSection) {
-  // Initially hide contact items
   const contactItems = contactSection.querySelectorAll(".contact-item")
   contactItems.forEach((item) => {
     item.style.transform = "translateX(-30px)"
     item.style.opacity = "0"
     item.style.transition = "all 0.6s ease"
   })
-
   contactObserver.observe(contactSection)
 }
 
-// Add dynamic background particles
+// Dynamic background particles
 function createParticles() {
   const hero = document.querySelector(".hero")
+  if (!hero) return
   const particleCount = 50
-
   for (let i = 0; i < particleCount; i++) {
     const particle = document.createElement("div")
     particle.className = "particle"
@@ -344,58 +315,33 @@ function createParticles() {
           animation: float ${3 + Math.random() * 4}s ease-in-out infinite;
           animation-delay: ${Math.random() * 2}s;
       `
-
     hero.appendChild(particle)
   }
 }
-
-// Initialize particles after a delay
 setTimeout(createParticles, 1000)
 
-// Add custom cursor effect for service cards
+// Custom cursor effect
 document.querySelectorAll(".service-card, .cta-buttons button").forEach((element) => {
   element.addEventListener("mouseenter", () => {
     document.body.style.cursor = "pointer"
   })
-
   element.addEventListener("mouseleave", () => {
     document.body.style.cursor = "default"
   })
 })
 
-// Error handling for missing elements
+// Error handling
 window.addEventListener("error", (e) => {
   console.warn("Non-critical error:", e.message)
 })
 
-// Add resize handler for responsive animations
-window.addEventListener(
-  "resize",
-  throttle(() => {
-    // Recalculate animations on resize
-    const isMobile = window.innerWidth <= 768
-
-    if (isMobile) {
-      // Disable heavy animations on mobile
-      document.querySelectorAll(".shape").forEach((shape) => {
-        shape.style.animation = "none"
-      })
-    } else {
-      // Re-enable animations on desktop
-      document.querySelectorAll(".shape").forEach((shape) => {
-        shape.style.animation = ""
-      })
-    }
-    // Recalculate carousel on resize
-    initClientsCarousel()
-  }, 250),
-)
-
-// Clients Carousel Logic
+// ===================================================================
+// NOVA LÓGICA DO CARROSSEL DE CLIENTES
+// ===================================================================
 function initClientsCarousel() {
+  const carouselContainer = document.querySelector(".carousel-container")
   const carouselTrack = document.querySelector(".carousel-track")
   const clientLogos = document.querySelectorAll(".client-logo")
-  // Removido: prevButton, nextButton
   const paginationContainer = document.querySelector(".carousel-pagination")
 
   if (!carouselTrack || clientLogos.length === 0 || !paginationContainer) {
@@ -404,23 +350,42 @@ function initClientsCarousel() {
   }
 
   let currentIndex = 0
-  let itemsPerPage = 3 // Default for desktop
+  let itemsPerPage = 3
   let autoSlideInterval
+  let autoSlideDuration = 3000 // Valor padrão para a velocidade do slide
 
-  const updateItemsPerPage = () => {
+  // Função para parar o slide automático
+  const stopAutoSlide = () => {
+    clearInterval(autoSlideInterval)
+  }
+
+  // Função para (re)iniciar o slide automático
+  const startAutoSlide = () => {
+    stopAutoSlide() // Limpa qualquer intervalo anterior para evitar múltiplos timers
+    autoSlideInterval = setInterval(nextSlide, autoSlideDuration)
+  }
+
+  // Função que atualiza as configurações do carrossel com base no tamanho da tela
+  const updateCarouselSettings = () => {
     if (window.innerWidth <= 480) {
       itemsPerPage = 1
+      autoSlideDuration = 5000 // Mais lento em celulares (5 segundos)
     } else if (window.innerWidth <= 768) {
       itemsPerPage = 2
+      autoSlideDuration = 4000 // Velocidade intermediária em tablets (4 segundos)
     } else {
       itemsPerPage = 3
+      autoSlideDuration = 3000 // Padrão em desktops (3 segundos)
     }
-    // Ensure currentIndex is valid after resize
-    if (currentIndex >= Math.ceil(clientLogos.length / itemsPerPage)) {
-      currentIndex = Math.max(0, Math.ceil(clientLogos.length / itemsPerPage) - 1)
+
+    // Garante que o índice atual seja válido após o redimensionamento
+    const totalSlides = Math.ceil(clientLogos.length / itemsPerPage)
+    if (currentIndex >= totalSlides) {
+      currentIndex = Math.max(0, totalSlides - 1)
     }
-    goToSlide(currentIndex)
-    createPaginationDots()
+
+    createPaginationDots() // Recria os pontos de paginação
+    goToSlide(currentIndex) // Vai para o slide correto
   }
 
   const goToSlide = (index) => {
@@ -433,9 +398,8 @@ function initClientsCarousel() {
       currentIndex = index
     }
 
-    // Calcula o offset baseado na largura do track e no número de itens por página
-    // Multiplica pelo currentIndex para mover para o slide correto
-    const offset = currentIndex * (carouselTrack.offsetWidth / itemsPerPage)
+    // Calcula o deslocamento com base na largura do container
+    const offset = currentIndex * carouselContainer.offsetWidth
     carouselTrack.style.transform = `translateX(-${offset}px)`
     updatePaginationDots()
   }
@@ -444,63 +408,43 @@ function initClientsCarousel() {
     goToSlide(currentIndex + 1)
   }
 
-  // Removido: prevSlide
-
   const createPaginationDots = () => {
     paginationContainer.innerHTML = ""
     const totalSlides = Math.ceil(clientLogos.length / itemsPerPage)
+    if (totalSlides <= 1) return; // Não mostra a paginação se houver apenas uma página
+
     for (let i = 0; i < totalSlides; i++) {
       const dot = document.createElement("div")
       dot.classList.add("pagination-dot")
-      if (i === currentIndex) {
-        dot.classList.add("active")
-      }
       dot.addEventListener("click", () => {
-        stopAutoSlide() // Para o auto-slide ao clicar no dot
         goToSlide(i)
-        startAutoSlide() // Reinicia o auto-slide
+        startAutoSlide() // Reinicia o timer ao clicar em um ponto
       })
       paginationContainer.appendChild(dot)
     }
+    updatePaginationDots()
   }
 
   const updatePaginationDots = () => {
-    document.querySelectorAll(".pagination-dot").forEach((dot, index) => {
-      if (index === currentIndex) {
-        dot.classList.add("active")
-      } else {
-        dot.classList.remove("active")
-      }
+    const dots = document.querySelectorAll(".pagination-dot")
+    dots.forEach((dot, index) => {
+      dot.classList.toggle("active", index === currentIndex)
     })
   }
 
-  const startAutoSlide = () => {
-    clearInterval(autoSlideInterval)
-    autoSlideInterval = setInterval(nextSlide, 3000) // Slide a cada 3 segundos
-  }
+  // Listeners de eventos
+  carouselContainer.addEventListener("mouseenter", stopAutoSlide)
+  carouselContainer.addEventListener("mouseleave", startAutoSlide)
 
-  const stopAutoSlide = () => {
-    clearInterval(autoSlideInterval)
-  }
-
-  // Removido: Event Listeners para prevButton e nextButton
-
-  // Initial setup
-  updateItemsPerPage() // Define itemsPerPage e cria os dots
-  goToSlide(0) // Garante que o carrossel comece na primeira posição
-  startAutoSlide()
-
-  // Pause auto-slide on hover
-  carouselTrack.addEventListener("mouseenter", stopAutoSlide)
-  carouselTrack.addEventListener("mouseleave", startAutoSlide)
-
-  // Recalculate on window resize
-  window.removeEventListener("resize", throttledScroll) // Remove o listener antigo para evitar duplicação
-  window.addEventListener(
-    "resize",
-    throttle(() => {
-      updateItemsPerPage()
-      goToSlide(currentIndex) // Reajusta a posição do slide atual
-    }, 250),
+  // Listener de redimensionamento da janela
+  window.addEventListener("resize", throttle(() => {
+    stopAutoSlide()
+    updateCarouselSettings()
+    startAutoSlide() // Reinicia com a nova duração
+  }, 250)
   )
+
+  // Configuração inicial
+  updateCarouselSettings()
+  startAutoSlide()
 }
