@@ -8,7 +8,7 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  color: #333; 
+  color: #333;
   overflow-x: hidden;
 }
 
@@ -731,7 +731,7 @@ body {
 
 /* Footer - Fundo Escuro */
 .footer {
-  background: #ffffff; 
+  background: #ffffff;
   color: white;
   padding: 40px 0;
 }
@@ -772,6 +772,20 @@ body {
     grid-template-columns: 1fr;
     gap: 40px;
     text-align: center;
+  }
+
+  /* ===== CORREÇÃO APLICADA AQUI ===== */
+  .contact-items {
+    /* Alinha o container dos itens à esquerda */
+    align-items: flex-start;
+    /* Adiciona margem para alinhar com o título quando centralizado */
+    margin: 0 auto;
+    max-width: fit-content;
+  }
+
+  .contact-item {
+    /* Garante que o texto DENTRO do item fique à esquerda */
+    text-align: left;
   }
 
   .image-text-info h2,
